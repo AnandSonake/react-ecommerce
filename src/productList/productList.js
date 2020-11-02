@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-
+import ProductDetails from './../productDetails/productDetails';
+import { Link } from 'react-router-dom';
 class ProductList extends Component
 {
     constructor(props){
@@ -8,8 +9,10 @@ class ProductList extends Component
             isError: false,
             error: '',
             isLoaded: false,
-            products : []
-        }
+            products : [],
+            showDetails:false,
+            productDetailsData:null
+          }
     }
 
     componentDidMount() {
@@ -40,8 +43,17 @@ class ProductList extends Component
           )
       }
 
+      changeRoutePath(item){
+        //e.preventDefault(); 
+        //this.history.push("/productDetails");
+        console.log('changeRoutePath');
+        this.setState({showDetails: true});
+        this.setState({productDetailsData : item});
+    }
+
       render() {
         const { isError, error, isLoaded, products  } = this.state;
+        console.log("productList "+ products);
         if (isError) {
           return <div>Error: {error}</div>;
         } else if (!isLoaded) {
@@ -49,8 +61,10 @@ class ProductList extends Component
         } else {
           return (
             <div>
-                {products.length > 0 && 
+                {products.length > 0 && !this.state.showDetails && 
                   products.map((item,index) => (
+                    <Link to="/productDetails" 
+                            onClick={() => this.changeRoutePath(item)}>
                     <div class="row"> 
                       <div class="column">
                         <h2>{item.title}</h2> <p>[ {item.category} ]  </p>
@@ -59,8 +73,14 @@ class ProductList extends Component
                         <h2>{item.price} $</h2>
                       </div>
                     </div>
-                  ))
+                    </Link>
+                    
+                  ))                  
                 } 
+                { 
+                this.state.showDetails && 
+                <ProductDetails data={this.state.productDetailsData} /> 
+                }
            </div>
           );
         }
