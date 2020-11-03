@@ -7,13 +7,13 @@ function App() {
 
   return (
     <div className="container">
-      <Link to="/products">
-        <h1> Home </h1>
-      </Link>
-      <div>
-          <Route path="/products" component={ProductList}/>
-      </div>
+    <Link to="/products">
+      <h1> Home </h1>
+    </Link>
+    <div>
+        <Route path="/products" component={ProductList}/>
     </div>
+  </div>
   );
 }
 

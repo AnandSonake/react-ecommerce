@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ProductDetails from './../productDetails/productDetails';
-import { Link } from 'react-router-dom';
+import { Link,Route  } from 'react-router-dom';
 class ProductList extends Component
 {
     constructor(props){
@@ -44,13 +44,16 @@ class ProductList extends Component
       }
 
       changeRoutePath(item){
-        //e.preventDefault(); 
-        //this.history.push("/productDetails");
         console.log('changeRoutePath');
-        this.setState({showDetails: true});
-        this.setState({productDetailsData : item});
+        this.setState({showDetails: true, productDetailsData : item});
+    }
+    handleNavigateToproductList()
+    {
+      console.log('handleNavigateToproductList');
+      this.setState({showDetails : false});
     }
 
+    
       render() {
         const { isError, error, isLoaded, products  } = this.state;
         console.log("productList "+ products);
@@ -60,27 +63,30 @@ class ProductList extends Component
           return <div>Loading...</div>;
         } else {
           return (
-            <div>
-                {products.length > 0 && !this.state.showDetails && 
+            <div className="wrapper">
+              <ul>
+                {
+                products.length > 0 && !this.state.showDetails && 
                   products.map((item,index) => (
-                    <Link to="/productDetails" 
-                            onClick={() => this.changeRoutePath(item)}>
-                    <div class="row"> 
-                      <div class="column">
-                        <h2>{item.title}</h2> <p>[ {item.category} ]  </p>
-                        <img key={index} src={item.image} style={{height: "100px" , width: "100px" }}/>
-                        <p>{item.description}</p>
-                        <h2>{item.price} $</h2>
+                    <li>
+                      <div class="row" onClick={() => this.changeRoutePath(item)}> 
+                        <div class="col-md-6">
+                          <h2>{item.title}</h2> <p>[ {item.category} ]  </p>
+                          <img key={index} src={item.image} style={{height: "100px" , width: "100px" }}/>
+                          <p>{item.description}</p>
+                          <h2>{item.price} $</h2>
+                        </div>
                       </div>
-                    </div>
-                    </Link>
-                    
+                    </li>
                   ))                  
                 } 
                 { 
                 this.state.showDetails && 
-                <ProductDetails data={this.state.productDetailsData} /> 
+                  <ProductDetails data={this.state.productDetailsData}  
+                  navigateToproductList={()=> this.handleNavigateToproductList()}
+                  /> 
                 }
+                </ul>
            </div>
           );
         }
