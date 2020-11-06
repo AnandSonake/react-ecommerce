@@ -41,6 +41,7 @@
 .wrapper{
   width:700px;
   margin:0 auto;
+  margin-top: 120px;
 }
 
 ul{
@@ -77,4 +78,56 @@ li span{
 
 .hand{
   cursor: pointer;
+}
+
+
+
+.form
+{
+  width: 500px;
+  margin:0 auto;
+  height: 35%;
+  border: 5px solid #BED8D4;
+  border-radius: 20%;
+  margin-top: 1em;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #F7F9F9;
+  display: flex;
+  padding: 45px;
+}
+
+.input{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+}
+.inputcontainer
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.fixed-top
+{
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    height: 90px;
+}
+
+.navbar-nav-height{
+  height:60px;
+  width: 200px;
+}
+
+.nav-link-margin-bottom
+{
+  margin-bottom: 20px;
 }
