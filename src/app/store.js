@@ -1,8 +1,16 @@
-import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import {createStore} from 'redux';
+import { reducer } from './../reducer/index'
 
-export default configureStore({
-  reducer: {
-    counter: counterReducer,
-  },
-});
+const initialState = {
+  cart: [],
+  products: [],
+  user:{
+    firstName:'bg',
+    email:'',
+    phone:'',
+    creditCard:''
+  }
+}
+
+
+export default createStore(reducer, initialState);
