@@ -1,13 +1,12 @@
 import React,{Component} from 'react';
 import './App.css';
 import ProductList from './components/productList';
-import { Route, Link } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import Header from './components/header';
 import store from './app/store';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Switch, Redirect } from 'react-router-dom';
-//import { Routes } from './routes';
 import ProductDetails from './components/productDetails';
 import Cart from './components/cart';
 import { loadProducts } from './reducer/actionCreators';

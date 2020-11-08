@@ -23,8 +23,14 @@ class Header extends Component {
 
 const mapStateToProps = state => {
     console.log('header.js mapStateToProps');
+
+    var persistedState = localStorage.getItem('cartState') 
+                       ? JSON.parse(localStorage.getItem('cartState'))
+                       : null
+    var cartData = (persistedState == undefined || persistedState == null) ? state.cart : persistedState; 
+
     return {
-        cartLength: state.cart.length
+        cartLength: cartData.length
     }
   }
 

@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import ProductDetails from './productDetails';
-import { Link,Route  } from 'react-router-dom';
 import {connect} from 'react-redux';
 import { addToCart } from './../reducer/actionCreators';
 
@@ -18,6 +16,18 @@ class ProductList extends Component
       this.setState({showDetails : false});
     }
 
+    incrementQuantity(item){
+      console.log('incrementQuantity');
+        item.quantity = item.quantity +1;
+    }
+
+    decrementQuantity(item)
+    {
+      console.log('decrementQuantity');
+      item.quantity = item.quantity <= 0 ? 0: item.quantity -1;;
+
+    }
+
       render() {
             return (
               <div className="wrapper">
@@ -32,13 +42,18 @@ class ProductList extends Component
                             <img key={index} src={item.image} style={{height: "100px" , width: "100px" }}/>
                             <p>{item.description}</p>
                             <h2>{item.price} $</h2>
+                            <div class="qty mt-5">
+                            <span class="plus bg-dark" onClick={()=> this.incrementQuantity(item)} >+</span>
+                            <span>{item.quantity } </span>
+                            <span class="minus bg-dark" onClick={()=> this.decrementQuantity(item)}> -</span>
+                            </div>
 
                             <button
-                          onClick={() => {
-                              this.props.addToCart(item)
-                          }}
-                          className="btn btn-info">Add to cart
-                        </button>
+                                onClick={() => {
+                                    this.props.addToCart(item)
+                                }}
+                              className="btn btn-info" style={{marginTop: "20px"}}>Add to cart 
+                            </button>
                           </div>
                           
                         </div>
@@ -55,19 +70,18 @@ class ProductList extends Component
 
 
 const mapStateToProps = state => {
-
   console.log('productlist.js - mapStateToProps called');
-
   return {
-    products1: state.products
+    products1: state.products,
+    currentQuantity: state.currentQuantity
   }
 }
 
 const mapDispatchToProps = dispatch => {
   console.log('productDetails.js - mapDispatchToProps called');
-
     return {
       addToCart(product){
+        product.totalPrice = product.quantity * product.price;
         dispatch(addToCart(product));
       }
     };

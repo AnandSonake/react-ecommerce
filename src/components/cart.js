@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Link,Route  } from 'react-router-dom';
-import { removeFromCart } from './../reducer/actionCreators';
+import {Redirect  } from 'react-router-dom';
+import { removeFromCart, emptyCart,updateName } from './../reducer/actionCreators';
 import {connect} from 'react-redux';
-
 
 const styles = {
     'margin-top': '100px'
@@ -10,23 +9,32 @@ const styles = {
 
 class Cart extends Component
 {
-    inputCheck = (e) => {
-        let filter = e.target.getAttribute('filter')   
-        e.target.value = e.target.value.replace(new RegExp(filter, 'g'), '')   
-        this.setState({[e.target.name]: e.target.value})
-        
-      }
-
+  constructor(props)
+  {
+    super(props);
+    this.state={
+      display:false,
+      firstName:'',
+      phone:'',
+      email:'',
+      credit:'',
+      redirect:false
+    }
+  }
+  
       submitCheck = () => {
    
-        if(!this.state.firstName || !this.state.lastName){
+        if(!this.state.firstName){
           alert("A name field is empty.")
         } else if(this.state.phone.length < 10 || !this.state.phone){
           alert("Phone number is not long enough.")
         } else if (!this.state.email.match(/@./g)) {
           alert("Email is in the wrong format.")
         } else {
-          this.setState({display: true})
+         alert("Order placed successfully !!");
+         this.props.emptyCart();
+         this.resetForm();
+         this.setState({redirect:true});
         }
      }
 
@@ -34,37 +42,54 @@ class Cart extends Component
         this.setState({
           display: !this.state.display,
           firstName: '', 
-          lastName: '', 
           phone: 0, 
-          email: ''     
-        })    
+          email: ''    ,
+          credit:'' 
+        })   
+      }
+      updateName(e){
+        this.setState({firstName:e.target.value});
+      }
+      updateEmail(e){
+        this.setState({email:e.target.value});
+      }
+      updatePhone(e){
+        this.setState({phone:e.target.value});
+      }
+      updateCredit(e){
+        this.setState({credit:e.target.value});
       }
 
-      displayData() {
-        return (
-          <div className="form">
-            <p>{this.state.lastName}, {this.state.firstName}</p>
-            <p>{this.state.phone} | {this.state.email}</p>
-            <button onClick={this.resetForm}>Reset</button>
-          </div>
-        )
-      }
-
-      displayForm() {
-
-      }
-
-
+    reducer(accumulator, currentValue){
+      return accumulator + currentValue;
+    }
     render(){
         return (
           <React.Fragment>
-            <div style={{marginTop: "100px"}} >
+            {this.state.redirect && <Redirect to="/products" push={true} />}
+
+            <div class="center" style={{marginTop: "100px"}} >
               <table>
+                <thead>
+                  <th>
+                  Product Name
+                  </th>
+                  <th>
+                    Quantity
+                  </th>
+                  <th>
+                    Price
+                  </th>
+                  <th>
+                    Remove
+                  </th>
+                </thead>
                 <tbody>
                   {this.props.cartProducts.map(product =>
                     <tr key={product.id}>
                       <td>{product.title}</td>
-                      <td className="text-right">${product.price}</td>
+                      <td style={{padding: "20px"}}>( {product.quantity} ) * {product.price}</td>
+                      <td style={{padding: "20px"}} className="text-right">{ Number(product.totalPrice).toFixed(2) }</td>
                       <td className="text-right">
                       <button bsSize="xsmall" bsStyle="danger"
                        onClick={() => this.props.removeFromCart(product)}>
@@ -78,10 +103,23 @@ class Cart extends Component
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan="4" >
+                    <td colSpan="3" >
+                      <b>
                       Total: ${
-                      //this.props.cart.reduce((sum, product) => sum + product.price, 0)
-                      }
+                      Number(this.props.cartProducts.reduce((sum, product) => sum + product.totalPrice, 0)).toFixed(2)
+                      
+                      }</b>
+                    </td>
+
+                    <td colSpan="4" >
+                      <b>
+                      <button
+                                onClick={() => {
+                                  this.props.emptyCart()
+                                }}
+                              className="btn btn-info" style={{marginTop: "20px"}}>Clear Cart 
+                            </button>
+                     </b>
                     </td>
                   </tr>
                 </tfoot>
@@ -91,13 +129,12 @@ class Cart extends Component
             <div className="form">
               <div className="header">
                 <h1>Checkout !</h1>
-                <p>Please provide your information below.</p>
               </div>
               <div className="inputcontainer">
-                <input filter="[^a-zA-Z ]" name="firstName" placeholder="First Name" onChange={this.inputCheck} />
-                <input placeholder="Email Address" onChange={(e) => {this.setState({email:e.target.value})}} />
-                <input filter="[^0-9]" maxLength="10" name="phone" placeholder="Phone Number" onChange={this.inputCheck} />
-                <input filter="[^0-9]" maxLength="10" name="creditcard" placeholder="1111-2222-3333-4444" onChange={this.inputCheck} />
+                <input style={{margin:"10px"}} value={this.state.firstName} filter="[^a-zA-Z ]" name="firstName" placeholder="First Name" onChange={(e)=> this.updateName(e)}/>
+                <input style={{margin:"10px"}} value={this.state.email} placeholder="Email Address"  onChange={(e)=> this.updateEmail(e)} />
+                <input style={{margin:"10px"}} value={this.state.phone} filter="[^0-9]" maxLength="10" name="phone" placeholder="Phone Number"  onChange={(e)=> this.updatePhone(e)} />
+                <input style={{margin:"10px"}} value={this.state.credit} filter="[^0-9]" maxLength="10" name="creditcard" placeholder="1111-2222-3333-4444"  onChange={(e)=> this.updateCredit(e)}/>
                 
                 <button onClick={this.submitCheck}>Buy</button>
               </div>
@@ -109,8 +146,15 @@ class Cart extends Component
 
 const mapStateToProps = state => {
   console.log('cart.js mapStateToProps');
+  
+  var persistedState = localStorage.getItem('cartState') 
+                       ? JSON.parse(localStorage.getItem('cartState'))
+                       : null
+  var cartData = (persistedState == undefined || persistedState == null) ? state.cart : persistedState; 
+
   return {
-    cartProducts: state.cart
+    cartProducts: cartData ,
+    user:state.user
   }
 }
 
@@ -118,6 +162,10 @@ const mapDispatchToProps = dispatch => {
   return {
     removeFromCart(product){
       dispatch(removeFromCart(product));
+    },
+
+    emptyCart(){
+      dispatch(emptyCart());
     }
   };
 };

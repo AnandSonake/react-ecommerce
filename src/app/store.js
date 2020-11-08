@@ -3,7 +3,14 @@ import { reducer } from './../reducer/index'
 
 const initialState = {
   cart: [],
-  products: []
+  products: [],
+  user:{
+    firstName:'bg',
+    email:'',
+    phone:'',
+    creditCard:''
+  }
 }
+
 
 export default createStore(reducer, initialState);
